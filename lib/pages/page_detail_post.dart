@@ -94,7 +94,7 @@ class _PageDetailPostState extends State<PageDetailPost> {
                   minLines: 1,
                   maxLines: 3,
                   decoration: const InputDecoration(
-                    hintText: "Écrire un p'tit bavardage",
+                    hintText: "Écrire eun caqu'rie",
                     border: OutlineInputBorder(),
                   ),
                 ),

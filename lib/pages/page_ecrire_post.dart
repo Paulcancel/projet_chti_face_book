@@ -86,7 +86,7 @@ class _PageEcrirePostState extends State<PageEcrirePost> {
       padding: const EdgeInsets.all(16),
       children: <Widget>[
         Text(
-          "Quoi d'neuf, ${widget.membreConnecte.prenom} ?",
+          "Ça dit quoi ${widget.membreConnecte.prenom} ?!",
           style: theme.textTheme.headlineSmall?.copyWith(
             fontWeight: FontWeight.w800,
           ),
@@ -114,7 +114,7 @@ class _PageEcrirePostState extends State<PageEcrirePost> {
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
                   : const Icon(Icons.image_outlined),
-          label: Text(_nomImageSelectionnee ?? "Ajouter eun' photo"),
+          label: Text(_nomImageSelectionnee ?? "Ajoutes eun' photo"),
         ),
         if (_nomImageSelectionnee != null) ...<Widget>[
           const SizedBox(height: 8),

@@ -48,7 +48,7 @@ class PageNotif extends StatelessWidget {
                     );
                   },
                   icon: const Icon(Icons.done_all),
-                  label: const Text("J'ai tout vu"),
+                  label: const Text("Che vu"),
                 ),
               ),
             ),

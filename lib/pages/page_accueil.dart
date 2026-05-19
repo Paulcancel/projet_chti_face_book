@@ -28,26 +28,29 @@ class PageAccueil extends StatelessWidget {
       stream: firestoreService.posts,
       builder: (context, snapshot) {
         final posts = snapshot.data ?? const <Post>[];
-        if (posts.isEmpty) {
-          return const EmptyBody(
-            icon: Icons.article_outlined,
-            message: Jargon.aucunPost,
-          );
-        }
-
-        return ListView.builder(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          itemCount: posts.length,
-          itemBuilder: (context, index) {
-            final post = posts[index];
-            return WidgetPost(
-              post: post,
-              membreConnecte: membreConnecte,
-              firestoreService: firestoreService,
-              storageService: storageService,
-              onOpenComments: () => _ouvrirCommentaires(context, post),
-            );
-          },
+        return ListView(
+          padding: const EdgeInsets.only(top: 8, bottom: 16),
+          children: <Widget>[
+            const _LogoAccueil(),
+            if (posts.isEmpty)
+              const SizedBox(
+                height: 260,
+                child: EmptyBody(
+                  icon: Icons.article_outlined,
+                  message: Jargon.aucunPost,
+                ),
+              )
+            else
+              ...posts.map((post) {
+                return WidgetPost(
+                  post: post,
+                  membreConnecte: membreConnecte,
+                  firestoreService: firestoreService,
+                  storageService: storageService,
+                  onOpenComments: () => _ouvrirCommentaires(context, post),
+                );
+              }),
+          ],
         );
       },
     );
@@ -63,6 +66,29 @@ class PageAccueil extends StatelessWidget {
               firestoreService: firestoreService,
               storageService: storageService,
             ),
+      ),
+    );
+  }
+}
+
+class _LogoAccueil extends StatelessWidget {
+  const _LogoAccueil();
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.centerRight,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: Image.asset(
+            'resources/logo.png',
+            width: 96,
+            height: 64,
+            fit: BoxFit.cover,
+          ),
+        ),
       ),
     );
   }

@@ -1,4 +1,4 @@
-﻿import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 import '../modeles/membre.dart';
@@ -55,7 +55,7 @@ class ServiceAuthentification {
     await Future<void>.delayed(const Duration(milliseconds: 180));
     final membre = _firestoreService.membreParEmail(email);
     if (membre == null || membre.motDePasse != motDePasse) {
-      return 'Adresse e-mail ou mot de passe incorrect.';
+      return "L'adresse e-mail ou l'mot d'passe, cha colle pas.";
     }
     _membreConnecte = membre;
     return null;
@@ -70,7 +70,7 @@ class ServiceAuthentification {
     final auth = _auth;
     if (auth != null) {
       if (motDePasse.length < 6) {
-        return 'Le mot de passe doit contenir au moins 6 caractères.';
+        return "Tin mot d'passe doit avoir au moins 6 caractères.";
       }
       try {
         final credentials = await auth.createUserWithEmailAndPassword(
@@ -79,17 +79,17 @@ class ServiceAuthentification {
         );
         final user = credentials.user;
         if (user == null) {
-          return 'Création du compte impossible.';
+          return "Pas moyen d'créer tin compte pour l'instant.";
         }
 
         final membre = Membre(
           id: user.uid,
           email: email.trim().toLowerCase(),
           motDePasse: '',
-          prenom: prenom.trim().isEmpty ? 'Nouveau' : prenom.trim(),
+          prenom: prenom.trim().isEmpty ? 'Tiot' : prenom.trim(),
           nom: nom.trim().isEmpty ? 'Membre' : nom.trim(),
           profession: "Membre Cht'i Face Bouc",
-          bio: 'Profil tout neuf, prêt à publier.',
+          bio: 'Eul\' profil ié prêt.',
           couleurAvatar: 0xFF8A5A44,
         );
         _firestoreService.addMember(membre);
@@ -102,20 +102,20 @@ class ServiceAuthentification {
 
     await Future<void>.delayed(const Duration(milliseconds: 180));
     if (_firestoreService.membreParEmail(email) != null) {
-      return 'Un membre existe déjà avec cette adresse.';
+      return "Y'a déjà quelqu'un avec c'te adresse.";
     }
     if (motDePasse.length < 4) {
-      return 'Le mot de passe doit contenir au moins 4 caractères.';
+      return "Tin mot d'passe doit avoir au moins 4 caractères.";
     }
 
     final membre = Membre(
       id: 'membre_${DateTime.now().microsecondsSinceEpoch}',
       email: email.trim().toLowerCase(),
       motDePasse: motDePasse,
-      prenom: prenom.trim().isEmpty ? 'Nouveau' : prenom.trim(),
+      prenom: prenom.trim().isEmpty ? 'Tiot' : prenom.trim(),
       nom: nom.trim().isEmpty ? 'Membre' : nom.trim(),
       profession: "Membre Cht'i Face Bouc",
-      bio: 'Profil tout neuf, prêt à publier.',
+      bio: 'Eul\' profil ié prêt.',
       couleurAvatar: 0xFF8A5A44,
     );
     _firestoreService.addMember(membre);
@@ -142,13 +142,12 @@ class ServiceAuthentification {
 
   String _messageAuth(FirebaseAuthException erreur) {
     return switch (erreur.code) {
-      'email-already-in-use' => 'Un membre existe déjà avec cette adresse.',
-      'invalid-email' => 'Adresse e-mail invalide.',
-      'user-not-found' ||
-      'wrong-password' ||
-      'invalid-credential' => 'Adresse e-mail ou mot de passe incorrect.',
-      'weak-password' => 'Le mot de passe est trop faible.',
-      _ => 'Authentification impossible : ${erreur.message ?? erreur.code}.',
+      'email-already-in-use' => "Y'a déjà quelqu'un avec c'te adresse.",
+      'invalid-email' => "L'adresse e-mail, cha va pas.",
+      'user-not-found' || 'wrong-password' || 'invalid-credential' =>
+        "L'adresse e-mail ou l'mot d'passe, cha colle pas.",
+      'weak-password' => "Tin mot d'passe est trop faiblard.",
+      _ => "Pas moyen d'te connecter : ${erreur.message ?? erreur.code}.",
     };
   }
 }
