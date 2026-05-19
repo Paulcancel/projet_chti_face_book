@@ -1,4 +1,4 @@
-# td1_ma_premiere_application
+# projet_chti_face_book
 
 Corrigé du TD1
 

@@ -1,4 +1,4 @@
-package com.example.td1_ma_premiere_application
+package com.example.projet_chti_face_book
 
 import io.flutter.embedding.android.FlutterActivity
 

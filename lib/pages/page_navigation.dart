@@ -41,11 +41,22 @@ class _PageNavigationState extends State<PageNavigation> {
         firestoreService: widget.firestoreService,
         storageService: widget.storageService,
       ),
+      PageMembres(
+        membreConnecte: widget.membreConnecte,
+        authentificationService: widget.authentificationService,
+        firestoreService: widget.firestoreService,
+        storageService: widget.storageService,
+      ),
       PageEcrirePost(
         membreConnecte: widget.membreConnecte,
         firestoreService: widget.firestoreService,
         storageService: widget.storageService,
         onPublication: () => setState(() => _index = 0),
+      ),
+      PageNotif(
+        membreConnecte: widget.membreConnecte,
+        firestoreService: widget.firestoreService,
+        storageService: widget.storageService,
       ),
       PageProfil(
         membreId: widget.membreConnecte.id,
@@ -54,25 +65,14 @@ class _PageNavigationState extends State<PageNavigation> {
         firestoreService: widget.firestoreService,
         storageService: widget.storageService,
       ),
-      PageMembres(
-        membreConnecte: widget.membreConnecte,
-        authentificationService: widget.authentificationService,
-        firestoreService: widget.firestoreService,
-        storageService: widget.storageService,
-      ),
-      PageNotif(
-        membreConnecte: widget.membreConnecte,
-        firestoreService: widget.firestoreService,
-        storageService: widget.storageService,
-      ),
     ];
 
     final titres = <String>[
       Jargon.accueil,
-      Jargon.publier,
-      Jargon.profil,
       Jargon.membres,
+      Jargon.publier,
       Jargon.notifications,
+      Jargon.profil,
     ];
 
     return Scaffold(
@@ -97,24 +97,24 @@ class _PageNavigationState extends State<PageNavigation> {
             label: Jargon.accueil,
           ),
           NavigationDestination(
-            icon: Icon(Icons.add_box_outlined),
-            selectedIcon: Icon(Icons.add_box),
-            label: Jargon.publier,
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.person_outline),
-            selectedIcon: Icon(Icons.person),
-            label: Jargon.profil,
-          ),
-          NavigationDestination(
             icon: Icon(Icons.groups_outlined),
             selectedIcon: Icon(Icons.groups),
             label: Jargon.membres,
           ),
           NavigationDestination(
+            icon: Icon(Icons.add_box_outlined),
+            selectedIcon: Icon(Icons.add_box),
+            label: Jargon.publier,
+          ),
+          NavigationDestination(
             icon: Icon(Icons.notifications_outlined),
             selectedIcon: Icon(Icons.notifications),
             label: Jargon.notifs,
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.person_outline),
+            selectedIcon: Icon(Icons.person),
+            label: Jargon.profil,
           ),
         ],
       ),

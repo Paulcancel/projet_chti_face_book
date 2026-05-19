@@ -87,9 +87,10 @@ class _ContenuProfil extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.only(bottom: 16),
       children: <Widget>[
+        _CouvertureProfil(membre: membre),
         Container(
           width: double.infinity,
-          padding: const EdgeInsets.fromLTRB(20, 22, 20, 24),
+          padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
           color: theme.colorScheme.surfaceContainerHighest,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -201,6 +202,36 @@ class _ContenuProfil extends StatelessWidget {
               storageService: storageService,
             ),
       ),
+    );
+  }
+}
+
+class _CouvertureProfil extends StatelessWidget {
+  const _CouvertureProfil({required this.membre});
+
+  final Membre membre;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final couvertureUrl = membre.couvertureUrl;
+
+    return SizedBox(
+      height: 150,
+      width: double.infinity,
+      child:
+          couvertureUrl == null || couvertureUrl.isEmpty
+              ? DecoratedBox(
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.primaryContainer,
+                ),
+                child: Icon(
+                  Icons.landscape_outlined,
+                  size: 48,
+                  color: theme.colorScheme.onPrimaryContainer,
+                ),
+              )
+              : Image.network(couvertureUrl, fit: BoxFit.cover),
     );
   }
 }

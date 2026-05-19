@@ -15,8 +15,16 @@ class ServiceStorage {
   bool get firebaseDisponible => Firebase.apps.isNotEmpty;
 
   Future<XFile?> choisirImageDepuisGalerie() {
+    return _choisirImage(ImageSource.gallery);
+  }
+
+  Future<XFile?> choisirImageDepuisCamera() {
+    return _choisirImage(ImageSource.camera);
+  }
+
+  Future<XFile?> _choisirImage(ImageSource source) {
     return ImagePicker().pickImage(
-      source: ImageSource.gallery,
+      source: source,
       imageQuality: 82,
       maxWidth: 1600,
     );

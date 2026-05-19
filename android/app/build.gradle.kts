@@ -9,7 +9,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.td1_ma_premiere_application"
+    namespace = "com.example.projet_chti_face_book"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 

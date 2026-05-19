@@ -30,7 +30,9 @@ class _PageModifierProfilState extends State<PageModifierProfil> {
   late final TextEditingController _professionController;
   late final TextEditingController _bioController;
   String? _photoUrl;
+  String? _couvertureUrl;
   bool _chargementPhoto = false;
+  bool _chargementCouverture = false;
 
   @override
   void initState() {
@@ -42,6 +44,7 @@ class _PageModifierProfilState extends State<PageModifierProfil> {
     );
     _bioController = TextEditingController(text: widget.membre.bio);
     _photoUrl = widget.membre.photoUrl;
+    _couvertureUrl = widget.membre.couvertureUrl;
   }
 
   @override
@@ -53,24 +56,42 @@ class _PageModifierProfilState extends State<PageModifierProfil> {
     super.dispose();
   }
 
-  Future<void> _choisirPhoto() async {
-    final image = await widget.storageService.choisirImageDepuisGalerie();
+  Future<void> _choisirImage({
+    required bool couverture,
+    required bool depuisCamera,
+  }) async {
+    final image =
+        depuisCamera
+            ? await widget.storageService.choisirImageDepuisCamera()
+            : await widget.storageService.choisirImageDepuisGalerie();
     if (image == null) {
       return;
     }
 
-    setState(() => _chargementPhoto = true);
-    final photoUrl = await widget.storageService.addImage(
+    setState(() {
+      if (couverture) {
+        _chargementCouverture = true;
+      } else {
+        _chargementPhoto = true;
+      }
+    });
+
+    final imageUrl = await widget.storageService.addImage(
       image: image,
       dossier: 'membres/${widget.membre.id}',
-      nomFichier: 'profil',
+      nomFichier: couverture ? 'couverture' : 'profil',
     );
     if (!mounted) {
       return;
     }
     setState(() {
-      _photoUrl = photoUrl ?? _photoUrl;
-      _chargementPhoto = false;
+      if (couverture) {
+        _couvertureUrl = imageUrl ?? _couvertureUrl;
+        _chargementCouverture = false;
+      } else {
+        _photoUrl = imageUrl ?? _photoUrl;
+        _chargementPhoto = false;
+      }
     });
   }
 
@@ -82,6 +103,7 @@ class _PageModifierProfilState extends State<PageModifierProfil> {
         profession: _professionController.text.trim(),
         bio: _bioController.text.trim(),
         photoUrl: _photoUrl,
+        couvertureUrl: _couvertureUrl,
       ),
     );
     widget.authentificationService.rafraichirMembreConnecte();
@@ -95,25 +117,35 @@ class _PageModifierProfilState extends State<PageModifierProfil> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: <Widget>[
+          _ApercuCouverture(couvertureUrl: _couvertureUrl),
+          const SizedBox(height: 12),
+          _BoutonsImage(
+            titre: 'Changer la couverture',
+            chargement: _chargementCouverture,
+            onGalerie:
+                () => _choisirImage(couverture: true, depuisCamera: false),
+            onCamera:
+                () => _choisirImage(couverture: true, depuisCamera: true),
+          ),
+          const SizedBox(height: 20),
           Center(
             child: WidgetImageProfil(
-              membre: widget.membre.copyWith(photoUrl: _photoUrl),
+              membre: widget.membre.copyWith(
+                photoUrl: _photoUrl,
+                couvertureUrl: _couvertureUrl,
+              ),
               serviceStorage: widget.storageService,
               rayon: 48,
             ),
           ),
           const SizedBox(height: 12),
-          OutlinedButton.icon(
-            onPressed: _chargementPhoto ? null : _choisirPhoto,
-            icon:
-                _chargementPhoto
-                    ? const SizedBox(
-                      width: 18,
-                      height: 18,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                    : const Icon(Icons.photo_camera_outlined),
-            label: const Text('Changer la photo'),
+          _BoutonsImage(
+            titre: 'Changer la photo de profil',
+            chargement: _chargementPhoto,
+            onGalerie:
+                () => _choisirImage(couverture: false, depuisCamera: false),
+            onCamera:
+                () => _choisirImage(couverture: false, depuisCamera: true),
           ),
           const SizedBox(height: 16),
           TextField(
@@ -165,6 +197,80 @@ class _PageModifierProfilState extends State<PageModifierProfil> {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _ApercuCouverture extends StatelessWidget {
+  const _ApercuCouverture({required this.couvertureUrl});
+
+  final String? couvertureUrl;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(8),
+      child: SizedBox(
+        height: 140,
+        width: double.infinity,
+        child:
+            couvertureUrl == null || couvertureUrl!.isEmpty
+                ? DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primaryContainer,
+                  ),
+                  child: Icon(
+                    Icons.landscape_outlined,
+                    size: 44,
+                    color: theme.colorScheme.onPrimaryContainer,
+                  ),
+                )
+                : Image.network(couvertureUrl!, fit: BoxFit.cover),
+      ),
+    );
+  }
+}
+
+class _BoutonsImage extends StatelessWidget {
+  const _BoutonsImage({
+    required this.titre,
+    required this.chargement,
+    required this.onGalerie,
+    required this.onCamera,
+  });
+
+  final String titre;
+  final bool chargement;
+  final VoidCallback onGalerie;
+  final VoidCallback onCamera;
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: <Widget>[
+        Text(titre, style: Theme.of(context).textTheme.titleSmall),
+        OutlinedButton.icon(
+          onPressed: chargement ? null : onGalerie,
+          icon: const Icon(Icons.image_outlined),
+          label: const Text('Galerie'),
+        ),
+        OutlinedButton.icon(
+          onPressed: chargement ? null : onCamera,
+          icon: const Icon(Icons.photo_camera_outlined),
+          label: const Text('Caméra'),
+        ),
+        if (chargement)
+          const SizedBox(
+            width: 32,
+            height: 32,
+            child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+          ),
+      ],
     );
   }
 }

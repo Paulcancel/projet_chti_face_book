@@ -36,8 +36,11 @@ class _PageEcrirePostState extends State<PageEcrirePost> {
     super.dispose();
   }
 
-  Future<void> _choisirImage() async {
-    final image = await widget.storageService.choisirImageDepuisGalerie();
+  Future<void> _choisirImage({required bool depuisCamera}) async {
+    final image =
+        depuisCamera
+            ? await widget.storageService.choisirImageDepuisCamera()
+            : await widget.storageService.choisirImageDepuisGalerie();
     if (image == null) {
       return;
     }
@@ -104,17 +107,35 @@ class _PageEcrirePostState extends State<PageEcrirePost> {
           ),
         ),
         const SizedBox(height: 16),
-        OutlinedButton.icon(
-          onPressed: _chargementImage ? null : _choisirImage,
-          icon:
-              _chargementImage
-                  ? const SizedBox(
-                    width: 18,
-                    height: 18,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                  : const Icon(Icons.image_outlined),
-          label: Text(_nomImageSelectionnee ?? "Ajoutes eun' photo"),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: <Widget>[
+            OutlinedButton.icon(
+              onPressed:
+                  _chargementImage
+                      ? null
+                      : () => _choisirImage(depuisCamera: false),
+              icon: const Icon(Icons.image_outlined),
+              label: const Text('Galerie'),
+            ),
+            OutlinedButton.icon(
+              onPressed:
+                  _chargementImage
+                      ? null
+                      : () => _choisirImage(depuisCamera: true),
+              icon: const Icon(Icons.photo_camera_outlined),
+              label: const Text('Caméra'),
+            ),
+            if (_chargementImage)
+              const SizedBox(
+                width: 36,
+                height: 36,
+                child: Center(
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+              ),
+          ],
         ),
         if (_nomImageSelectionnee != null) ...<Widget>[
           const SizedBox(height: 8),

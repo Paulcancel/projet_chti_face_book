@@ -15,6 +15,7 @@
   static const bio = 'bio';
   static const couleurAvatar = 'couleurAvatar';
   static const photoUrl = 'photoUrl';
+  static const couvertureUrl = 'couvertureUrl';
 
   static const auteurId = 'auteurId';
   static const contenu = 'contenu';

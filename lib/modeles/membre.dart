@@ -9,6 +9,7 @@
     required this.bio,
     required this.couleurAvatar,
     this.photoUrl,
+    this.couvertureUrl,
   });
 
   final String id;
@@ -20,6 +21,7 @@
   final String bio;
   final int couleurAvatar;
   final String? photoUrl;
+  final String? couvertureUrl;
 
   String get nomComplet => '$prenom $nom';
 
@@ -39,6 +41,7 @@
     String? bio,
     int? couleurAvatar,
     String? photoUrl,
+    String? couvertureUrl,
   }) {
     return Membre(
       id: id ?? this.id,
@@ -50,6 +53,7 @@
       bio: bio ?? this.bio,
       couleurAvatar: couleurAvatar ?? this.couleurAvatar,
       photoUrl: photoUrl ?? this.photoUrl,
+      couvertureUrl: couvertureUrl ?? this.couvertureUrl,
     );
   }
 
@@ -64,6 +68,7 @@
       'bio': bio,
       'couleurAvatar': couleurAvatar,
       'photoUrl': photoUrl,
+      'couvertureUrl': couvertureUrl,
     };
   }
 
@@ -78,6 +83,7 @@
       bio: map['bio'] as String? ?? '',
       couleurAvatar: map['couleurAvatar'] as int? ?? 0xFF2F7D6E,
       photoUrl: map['photoUrl'] as String?,
+      couvertureUrl: map['couvertureUrl'] as String?,
     );
   }
 }

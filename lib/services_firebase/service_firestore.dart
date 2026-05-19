@@ -209,19 +209,17 @@ class ServiceFirestore {
     return snapshot.count ?? 0;
   }
 
-  void addMember(Membre membre) {
+  Future<void> addMember(Membre membre) async {
     final firestore = _firestore;
     if (firestore == null) {
       _membres.add(membre);
       return;
     }
 
-    unawaited(
-      firestore
-          .collection(Constantes.membres)
-          .doc(membre.id)
-          .set(membre.toMap()),
-    );
+    await firestore
+        .collection(Constantes.membres)
+        .doc(membre.id)
+        .set(membre.toMap());
   }
 
   void updateMember(Membre membre) {

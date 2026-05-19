@@ -27,12 +27,27 @@ class ServiceAuthentification {
           _membreConnecte = null;
           return null;
         }
-        _membreConnecte = await _firestoreService.membreFirebase(user.uid);
+        _membreConnecte = await _membreDepuisAuth(user);
         return _membreConnecte;
       });
     }
 
     return Stream<Membre?>.value(_membreConnecte);
+  }
+
+  Future<Membre?> _membreDepuisAuth(User user) async {
+    final membre = await _firestoreService.membreFirebase(user.uid);
+    if (membre != null) {
+      return membre;
+    }
+
+    final membreConnecte = _membreConnecte;
+    if (membreConnecte?.id == user.uid) {
+      return membreConnecte;
+    }
+
+    await Future<void>.delayed(const Duration(milliseconds: 250));
+    return _firestoreService.membreFirebase(user.uid);
   }
 
   Future<String?> connecter({
@@ -92,7 +107,7 @@ class ServiceAuthentification {
           bio: 'Eul\' profil ié prêt.',
           couleurAvatar: 0xFF8A5A44,
         );
-        _firestoreService.addMember(membre);
+        await _firestoreService.addMember(membre);
         _membreConnecte = membre;
         return null;
       } on FirebaseAuthException catch (erreur) {
@@ -118,7 +133,7 @@ class ServiceAuthentification {
       bio: 'Eul\' profil ié prêt.',
       couleurAvatar: 0xFF8A5A44,
     );
-    _firestoreService.addMember(membre);
+    await _firestoreService.addMember(membre);
     _membreConnecte = membre;
     return null;
   }
