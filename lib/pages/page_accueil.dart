@@ -1,12 +1,14 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
+
+import '../modeles/donnees.dart';
 
 import '../modeles/membre.dart';
 import '../modeles/post.dart';
 import '../services_firebase/service_firestore.dart';
 import '../services_firebase/service_storage.dart';
-import '../widgets/empty_body.dart';
+import '../widgets/widget_vide.dart';
 import '../widgets/widget_post.dart';
-import 'page_commentaires.dart';
+import 'page_detail_post.dart';
 
 class PageAccueil extends StatelessWidget {
   const PageAccueil({
@@ -29,7 +31,7 @@ class PageAccueil extends StatelessWidget {
         if (posts.isEmpty) {
           return const EmptyBody(
             icon: Icons.article_outlined,
-            message: 'Aucun post pour le moment.',
+            message: Jargon.aucunPost,
           );
         }
 
@@ -55,7 +57,7 @@ class PageAccueil extends StatelessWidget {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder:
-            (_) => PageCommentaires(
+            (_) => PageDetailPost(
               post: post,
               membreConnecte: membreConnecte,
               firestoreService: firestoreService,

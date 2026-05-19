@@ -1,20 +1,26 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
+
+import '../modeles/donnees.dart';
 
 import '../modeles/membre.dart';
-import '../modeles/notification_membre.dart';
+import '../modeles/notif.dart';
 import '../services_firebase/service_firestore.dart';
-import '../widgets/empty_body.dart';
+import '../services_firebase/service_storage.dart';
+import '../widgets/widget_vide.dart';
 import '../widgets/widget_notif.dart';
+import 'page_detail_post.dart';
 
 class PageNotif extends StatelessWidget {
   const PageNotif({
     super.key,
     required this.membreConnecte,
     required this.firestoreService,
+    required this.storageService,
   });
 
   final Membre membreConnecte;
   final ServiceFirestore firestoreService;
+  final ServiceStorage storageService;
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +31,7 @@ class PageNotif extends StatelessWidget {
         if (notifications.isEmpty) {
           return const EmptyBody(
             icon: Icons.notifications_outlined,
-            message: 'Aucune notification.',
+            message: Jargon.aucuneNotification,
           );
         }
 
@@ -42,7 +48,7 @@ class PageNotif extends StatelessWidget {
                     );
                   },
                   icon: const Icon(Icons.done_all),
-                  label: const Text('Tout marquer comme lu'),
+                  label: const Text("J'ai tout vu"),
                 ),
               ),
             ),
@@ -51,13 +57,56 @@ class PageNotif extends StatelessWidget {
                 itemCount: notifications.length,
                 separatorBuilder: (_, __) => const Divider(height: 1),
                 itemBuilder: (context, index) {
-                  return WidgetNotif(notification: notifications[index]);
+                  final notification = notifications[index];
+                  return WidgetNotif(
+                    notification: notification,
+                    onTap:
+                        notification.postId == null
+                            ? null
+                            : () => _ouvrirPost(context, notification),
+                  );
                 },
               ),
             ),
           ],
         );
       },
+    );
+  }
+
+  Future<void> _ouvrirPost(
+    BuildContext context,
+    NotificationMembre notification,
+  ) async {
+    firestoreService.marquerNotificationLue(notification.id);
+
+    final postId = notification.postId;
+    if (postId == null) {
+      return;
+    }
+
+    final post = await firestoreService.postParId(postId);
+    if (!context.mounted) {
+      return;
+    }
+
+    if (post == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Cette racontache n'existe plus.")),
+      );
+      return;
+    }
+
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder:
+            (_) => PageDetailPost(
+              post: post,
+              membreConnecte: membreConnecte,
+              firestoreService: firestoreService,
+              storageService: storageService,
+            ),
+      ),
     );
   }
 }

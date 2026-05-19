@@ -1,4 +1,6 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
+
+import '../modeles/donnees.dart';
 
 import '../modeles/membre.dart';
 import '../services_firebase/service_authentification.dart';
@@ -6,7 +8,7 @@ import '../services_firebase/service_firestore.dart';
 import '../services_firebase/service_storage.dart';
 import 'page_accueil.dart';
 import 'page_ecrire_post.dart';
-import 'page_liste_membres.dart';
+import 'page_membres.dart';
 import 'page_notif.dart';
 import 'page_profil.dart';
 
@@ -52,7 +54,7 @@ class _PageNavigationState extends State<PageNavigation> {
         firestoreService: widget.firestoreService,
         storageService: widget.storageService,
       ),
-      PageListeMembres(
+      PageMembres(
         membreConnecte: widget.membreConnecte,
         authentificationService: widget.authentificationService,
         firestoreService: widget.firestoreService,
@@ -61,15 +63,16 @@ class _PageNavigationState extends State<PageNavigation> {
       PageNotif(
         membreConnecte: widget.membreConnecte,
         firestoreService: widget.firestoreService,
+        storageService: widget.storageService,
       ),
     ];
 
     final titres = <String>[
-      'Accueil',
-      'Publier',
-      'Profil',
-      'Membres',
-      'Notifications',
+      Jargon.accueil,
+      Jargon.publier,
+      Jargon.profil,
+      Jargon.membres,
+      Jargon.notifications,
     ];
 
     return Scaffold(
@@ -77,7 +80,7 @@ class _PageNavigationState extends State<PageNavigation> {
         title: Text(titres[_index]),
         actions: <Widget>[
           IconButton(
-            tooltip: 'Déconnexion',
+            tooltip: Jargon.deconnexion,
             onPressed: widget.authentificationService.deconnecter,
             icon: const Icon(Icons.logout),
           ),
@@ -91,27 +94,27 @@ class _PageNavigationState extends State<PageNavigation> {
           NavigationDestination(
             icon: Icon(Icons.home_outlined),
             selectedIcon: Icon(Icons.home),
-            label: 'Accueil',
+            label: Jargon.accueil,
           ),
           NavigationDestination(
             icon: Icon(Icons.add_box_outlined),
             selectedIcon: Icon(Icons.add_box),
-            label: 'Publier',
+            label: Jargon.publier,
           ),
           NavigationDestination(
             icon: Icon(Icons.person_outline),
             selectedIcon: Icon(Icons.person),
-            label: 'Profil',
+            label: Jargon.profil,
           ),
           NavigationDestination(
             icon: Icon(Icons.groups_outlined),
             selectedIcon: Icon(Icons.groups),
-            label: 'Membres',
+            label: Jargon.membres,
           ),
           NavigationDestination(
             icon: Icon(Icons.notifications_outlined),
             selectedIcon: Icon(Icons.notifications),
-            label: 'Notifs',
+            label: Jargon.notifs,
           ),
         ],
       ),

@@ -1,14 +1,14 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 
 import '../modeles/commentaire.dart';
-import '../modeles/date_heure.dart';
+import '../modeles/donnees.dart';
 import '../modeles/membre.dart';
 import '../modeles/post.dart';
 import '../services_firebase/service_firestore.dart';
 import '../services_firebase/service_storage.dart';
-import 'widget_image_profil.dart';
+import 'avatar.dart';
 
-class WidgetPost extends StatelessWidget {
+class WidgetPost extends StatefulWidget {
   const WidgetPost({
     super.key,
     required this.post,
@@ -17,6 +17,7 @@ class WidgetPost extends StatelessWidget {
     required this.storageService,
     this.onOpenComments,
     this.afficherBoutonCommentaire = true,
+    this.imageGrandeParDefaut = false,
   });
 
   final Post post;
@@ -25,20 +26,34 @@ class WidgetPost extends StatelessWidget {
   final ServiceStorage storageService;
   final VoidCallback? onOpenComments;
   final bool afficherBoutonCommentaire;
+  final bool imageGrandeParDefaut;
+
+  @override
+  State<WidgetPost> createState() => _WidgetPostState();
+}
+
+class _WidgetPostState extends State<WidgetPost> {
+  late bool _imageAgrandie;
+
+  @override
+  void initState() {
+    super.initState();
+    _imageAgrandie = widget.imageGrandeParDefaut;
+  }
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<Membre?>(
-      stream: firestoreService.membreForId(post.auteurId),
+      stream: widget.firestoreService.membreForId(widget.post.auteurId),
       builder: (context, auteurSnapshot) {
         return StreamBuilder<List<Commentaire>>(
-          stream: firestoreService.commentairesForPost(post.id),
+          stream: widget.firestoreService.commentairesForPost(widget.post.id),
           builder: (context, commentairesSnapshot) {
             return _buildPost(
               context,
               auteurSnapshot.data,
               commentairesSnapshot.data?.length ??
-                  firestoreService.nombreCommentaires(post.id),
+                  widget.firestoreService.nombreCommentaires(widget.post.id),
             );
           },
         );
@@ -52,90 +67,107 @@ class WidgetPost extends StatelessWidget {
     int nombreCommentaires,
   ) {
     final theme = Theme.of(context);
-    final aime = post.estAimePar(membreConnecte.id);
+    final aime = widget.post.estAimePar(widget.membreConnecte.id);
+    final imageUrl = widget.post.imageUrl;
+    final peutOuvrirCommentaires =
+        widget.afficherBoutonCommentaire && widget.onOpenComments != null;
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       elevation: 0,
+      clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(
         side: BorderSide(color: theme.colorScheme.outlineVariant),
         borderRadius: BorderRadius.circular(8),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(14),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Row(
-              children: <Widget>[
-                if (auteur == null)
-                  const CircleAvatar(child: Icon(Icons.person_outline))
-                else
-                  WidgetImageProfil(
-                    membre: auteur,
-                    serviceStorage: storageService,
-                    rayon: 23,
+      child: InkWell(
+        onTap: peutOuvrirCommentaires ? widget.onOpenComments : null,
+        child: Padding(
+          padding: const EdgeInsets.all(14),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Row(
+                children: <Widget>[
+                  if (auteur == null)
+                    const CircleAvatar(child: Icon(Icons.person_outline))
+                  else
+                    WidgetImageProfil(
+                      membre: auteur,
+                      serviceStorage: widget.storageService,
+                      rayon: 23,
+                    ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          auteur?.nomComplet ?? Jargon.membreInconnu,
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        Text(
+                          DateHeure.relative(widget.post.dateCreation),
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        auteur?.nomComplet ?? 'Membre inconnu',
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      Text(
-                        DateHeure.relative(post.dateCreation),
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
+                ],
+              ),
+              const SizedBox(height: 14),
+              Text(widget.post.contenu, style: theme.textTheme.bodyLarge),
+              if (imageUrl != null && imageUrl.isNotEmpty) ...<Widget>[
+                const SizedBox(height: 12),
+                GestureDetector(
+                  onTap:
+                      () => setState(() {
+                        _imageAgrandie = !_imageAgrandie;
+                      }),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 180),
+                      curve: Curves.easeOut,
+                      width: double.infinity,
+                      height:
+                          _imageAgrandie
+                              ? MediaQuery.sizeOf(context).height * 0.5
+                              : 220,
+                      child: Image.network(imageUrl, fit: BoxFit.cover),
+                    ),
                   ),
                 ),
               ],
-            ),
-            const SizedBox(height: 14),
-            Text(post.contenu, style: theme.textTheme.bodyLarge),
-            if (post.imageUrl != null && post.imageUrl!.isNotEmpty) ...<Widget>[
               const SizedBox(height: 12),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: Image.network(
-                  post.imageUrl!,
-                  width: double.infinity,
-                  height: MediaQuery.sizeOf(context).height * 0.5,
-                  fit: BoxFit.cover,
-                ),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: <Widget>[
+                  FilledButton.tonalIcon(
+                    onPressed: () {
+                      widget.firestoreService.toggleLike(
+                        postId: widget.post.id,
+                        membreId: widget.membreConnecte.id,
+                      );
+                    },
+                    icon: Icon(aime ? Icons.star_rounded : Icons.star_border),
+                    label: Text('${widget.post.nombreLikes} ${Jargon.like}'),
+                  ),
+                  if (widget.afficherBoutonCommentaire)
+                    OutlinedButton.icon(
+                      onPressed: widget.onOpenComments,
+                      icon: const Icon(Icons.mode_comment_outlined),
+                      label: Text('$nombreCommentaires ${Jargon.commentaires}'),
+                    ),
+                ],
               ),
             ],
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: <Widget>[
-                FilledButton.tonalIcon(
-                  onPressed: () {
-                    firestoreService.toggleLike(
-                      postId: post.id,
-                      membreId: membreConnecte.id,
-                    );
-                  },
-                  icon: Icon(aime ? Icons.star_rounded : Icons.star_border),
-                  label: Text('${post.nombreLikes}'),
-                ),
-                if (afficherBoutonCommentaire)
-                  OutlinedButton.icon(
-                    onPressed: onOpenComments,
-                    icon: const Icon(Icons.mode_comment_outlined),
-                    label: Text('$nombreCommentaires'),
-                  ),
-              ],
-            ),
-          ],
+          ),
         ),
       ),
     );

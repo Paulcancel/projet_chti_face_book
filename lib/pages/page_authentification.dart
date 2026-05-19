@@ -1,5 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 
+import '../modeles/donnees.dart';
 import '../services_firebase/service_authentification.dart';
 
 class PageAuthentification extends StatefulWidget {
@@ -87,7 +88,7 @@ class _PageAuthentificationState extends State<PageAuthentification> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    "Cht'i Face Bouc",
+                    Jargon.app,
                     textAlign: TextAlign.center,
                     style: theme.textTheme.headlineMedium?.copyWith(
                       fontWeight: FontWeight.w800,
@@ -108,7 +109,9 @@ class _PageAuthentificationState extends State<PageAuthentification> {
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: <Widget>[
                             Text(
-                              _creationCompte ? 'Créer un compte' : 'Connexion',
+                              _creationCompte
+                                  ? Jargon.creerCompte
+                                  : Jargon.connexion,
                               style: theme.textTheme.titleLarge?.copyWith(
                                 fontWeight: FontWeight.w700,
                               ),
@@ -199,7 +202,9 @@ class _PageAuthentificationState extends State<PageAuthentification> {
                                             : Icons.login,
                                       ),
                               label: Text(
-                                _creationCompte ? 'Créer' : 'Se connecter',
+                                _creationCompte
+                                    ? Jargon.creerCompte
+                                    : Jargon.seConnecter,
                               ),
                             ),
                             const SizedBox(height: 8),
@@ -215,8 +220,8 @@ class _PageAuthentificationState extends State<PageAuthentification> {
                                       },
                               child: Text(
                                 _creationCompte
-                                    ? "J'ai déjà un compte"
-                                    : 'Créer un nouveau compte',
+                                    ? Jargon.dejaUnCompte
+                                    : Jargon.nouveauCompte,
                               ),
                             ),
                           ],
@@ -230,12 +235,12 @@ class _PageAuthentificationState extends State<PageAuthentification> {
                       ButtonSegment<bool>(
                         value: false,
                         icon: Icon(Icons.login),
-                        label: Text('Connexion'),
+                        label: Text(Jargon.connexion),
                       ),
                       ButtonSegment<bool>(
                         value: true,
                         icon: Icon(Icons.person_add_alt_1),
-                        label: Text('Inscription'),
+                        label: Text(Jargon.inscription),
                       ),
                     ],
                     selected: <bool>{_creationCompte},

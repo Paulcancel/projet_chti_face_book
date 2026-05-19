@@ -1,4 +1,6 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
+
+import '../modeles/donnees.dart';
 
 import '../modeles/membre.dart';
 import '../services_firebase/service_firestore.dart';
@@ -73,7 +75,7 @@ class _PageEcrirePostState extends State<PageEcrirePost> {
     FocusScope.of(context).unfocus();
     ScaffoldMessenger.of(
       context,
-    ).showSnackBar(const SnackBar(content: Text('Post publié.')));
+    ).showSnackBar(const SnackBar(content: Text("Racontache publié.")));
     widget.onPublication();
   }
 
@@ -84,7 +86,7 @@ class _PageEcrirePostState extends State<PageEcrirePost> {
       padding: const EdgeInsets.all(16),
       children: <Widget>[
         Text(
-          'Quoi de neuf, ${widget.membreConnecte.prenom} ?',
+          "Quoi d'neuf, ${widget.membreConnecte.prenom} ?",
           style: theme.textTheme.headlineSmall?.copyWith(
             fontWeight: FontWeight.w800,
           ),
@@ -97,7 +99,7 @@ class _PageEcrirePostState extends State<PageEcrirePost> {
           textInputAction: TextInputAction.newline,
           decoration: const InputDecoration(
             alignLabelWithHint: true,
-            labelText: 'Votre publication',
+            labelText: "Eul' racontache",
             border: OutlineInputBorder(),
           ),
         ),
@@ -112,14 +114,14 @@ class _PageEcrirePostState extends State<PageEcrirePost> {
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
                   : const Icon(Icons.image_outlined),
-          label: Text(_nomImageSelectionnee ?? 'Ajouter une photo'),
+          label: Text(_nomImageSelectionnee ?? "Ajouter eun' photo"),
         ),
         if (_nomImageSelectionnee != null) ...<Widget>[
           const SizedBox(height: 8),
           Text(
             widget.storageService.firebaseDisponible
-                ? 'Photo prête à publier.'
-                : 'Photo sélectionnée. Configurez Firebase Storage pour la sauvegarder.',
+                ? "Photo prête pour l'racontache."
+                : "Photo choisie. Configurez Firebase Storage pour l'garder.",
             style: theme.textTheme.bodySmall?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
@@ -129,7 +131,7 @@ class _PageEcrirePostState extends State<PageEcrirePost> {
         FilledButton.icon(
           onPressed: _publier,
           icon: const Icon(Icons.send),
-          label: const Text('Publier'),
+          label: const Text(Jargon.publier),
         ),
       ],
     );

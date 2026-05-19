@@ -6,7 +6,7 @@ import 'package:firebase_core/firebase_core.dart';
 import '../modeles/commentaire.dart';
 import '../modeles/constantes.dart';
 import '../modeles/membre.dart';
-import '../modeles/notification_membre.dart';
+import '../modeles/notif.dart';
 import '../modeles/post.dart';
 
 class ServiceFirestore {
@@ -169,6 +169,16 @@ class ServiceFirestore {
     return doc.exists ? _membreDepuisDoc(doc) : null;
   }
 
+  Future<Post?> postParId(String postId) async {
+    final firestore = _firestore;
+    if (firestore == null) {
+      return post(postId);
+    }
+
+    final doc = await firestore.collection(Constantes.posts).doc(postId).get();
+    return doc.exists ? _postDepuisDoc(doc) : null;
+  }
+
   Post? post(String postId) {
     for (final post in _posts) {
       if (post.id == postId) {
@@ -254,7 +264,7 @@ class ServiceFirestore {
 
     if (firestore == null) {
       _posts.add(post);
-      _notifierNouveauPostLocal(auteurId);
+      _notifierNouveauPostLocal(post);
       return;
     }
 
@@ -287,7 +297,9 @@ class ServiceFirestore {
           destinataireId: post.auteurId,
           auteurId: membreId,
           type: 'like',
-          message: '${auteur.nomComplet} aime votre post.',
+          postId: post.id,
+          message:
+              '${auteur.nomComplet} a lancé un Vindidi ! sur votre racontache.',
         );
       }
     }
@@ -330,7 +342,8 @@ class ServiceFirestore {
           destinataireId: postCible.auteurId,
           auteurId: auteurId,
           type: 'commentaire',
-          message: '${auteur.nomComplet} a commenté votre post.',
+          postId: postCible.id,
+          message: '${auteur.nomComplet} a bavardé sur votre racontache.',
         );
       }
     }
@@ -349,6 +362,22 @@ class ServiceFirestore {
         _notifications[index] = notification.copyWith(lue: true);
       }
     }
+  }
+
+  void marquerNotificationLue(String notificationId) {
+    final firestore = _firestore;
+    if (firestore != null) {
+      unawaited(_marquerNotificationLueFirebase(firestore, notificationId));
+      return;
+    }
+
+    final index = _notifications.indexWhere(
+      (notification) => notification.id == notificationId,
+    );
+    if (index == -1) {
+      return;
+    }
+    _notifications[index] = _notifications[index].copyWith(lue: true);
   }
 
   Future<void> _addPostFirebase(FirebaseFirestore firestore, Post post) async {
@@ -373,7 +402,8 @@ class ServiceFirestore {
         destinataireId: doc.id,
         auteurId: post.auteurId,
         type: 'post',
-        message: '${auteur.nomComplet} a publié un nouveau post.',
+        postId: post.id,
+        message: "${auteur.nomComplet} a publié eun' racontache.",
       );
     }
   }
@@ -406,7 +436,9 @@ class ServiceFirestore {
           destinataireId: post.auteurId,
           auteurId: membreId,
           type: 'like',
-          message: '${auteur.nomComplet} aime votre post.',
+          postId: post.id,
+          message:
+              '${auteur.nomComplet} a lancé un Vindidi ! sur votre racontache.',
         );
       }
     }
@@ -448,7 +480,8 @@ class ServiceFirestore {
           destinataireId: postCible.auteurId,
           auteurId: auteurId,
           type: 'commentaire',
-          message: '${auteur.nomComplet} a commenté votre post.',
+          postId: postCible.id,
+          message: '${auteur.nomComplet} a bavardé sur votre racontache.',
         );
       }
     }
@@ -471,11 +504,22 @@ class ServiceFirestore {
     await batch.commit();
   }
 
+  Future<void> _marquerNotificationLueFirebase(
+    FirebaseFirestore firestore,
+    String notificationId,
+  ) {
+    return firestore
+        .collection(Constantes.notifications)
+        .doc(notificationId)
+        .update({Constantes.lue: true});
+  }
+
   Future<void> _ajouterNotificationFirebase(
     FirebaseFirestore firestore, {
     required String destinataireId,
     required String auteurId,
     required String type,
+    String? postId,
     required String message,
   }) {
     final reference = firestore.collection(Constantes.notifications).doc();
@@ -484,6 +528,7 @@ class ServiceFirestore {
       Constantes.destinataireId: destinataireId,
       Constantes.auteurId: auteurId,
       Constantes.type: type,
+      Constantes.postId: postId,
       Constantes.message: message,
       Constantes.dateCreation: FieldValue.serverTimestamp(),
       Constantes.lue: false,
@@ -524,17 +569,18 @@ class ServiceFirestore {
     return map;
   }
 
-  void _notifierNouveauPostLocal(String auteurId) {
-    final auteur = membre(auteurId);
+  void _notifierNouveauPostLocal(Post post) {
+    final auteur = membre(post.auteurId);
     if (auteur == null) {
       return;
     }
-    for (final destinataire in _membres.where((m) => m.id != auteurId)) {
+    for (final destinataire in _membres.where((m) => m.id != post.auteurId)) {
       _ajouterNotification(
         destinataireId: destinataire.id,
-        auteurId: auteurId,
+        auteurId: post.auteurId,
         type: 'post',
-        message: '${auteur.nomComplet} a publié un nouveau post.',
+        postId: post.id,
+        message: "${auteur.nomComplet} a publié eun' racontache.",
       );
     }
   }
@@ -543,6 +589,7 @@ class ServiceFirestore {
     required String destinataireId,
     required String auteurId,
     required String type,
+    String? postId,
     required String message,
   }) {
     _notifications.add(
@@ -552,6 +599,7 @@ class ServiceFirestore {
         auteurId: auteurId,
         type: type,
         message: message,
+        postId: postId,
         dateCreation: DateTime.now(),
       ),
     );

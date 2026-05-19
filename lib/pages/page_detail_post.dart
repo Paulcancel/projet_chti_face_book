@@ -1,14 +1,16 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
+
+import '../modeles/donnees.dart';
 
 import '../modeles/membre.dart';
 import '../modeles/post.dart';
 import '../services_firebase/service_firestore.dart';
 import '../services_firebase/service_storage.dart';
-import '../widgets/widget_liste_commentaire.dart';
+import '../widgets/liste_commentaire.dart';
 import '../widgets/widget_post.dart';
 
-class PageCommentaires extends StatefulWidget {
-  const PageCommentaires({
+class PageDetailPost extends StatefulWidget {
+  const PageDetailPost({
     super.key,
     required this.post,
     required this.membreConnecte,
@@ -22,10 +24,10 @@ class PageCommentaires extends StatefulWidget {
   final ServiceStorage storageService;
 
   @override
-  State<PageCommentaires> createState() => _PageCommentairesState();
+  State<PageDetailPost> createState() => _PageDetailPostState();
 }
 
-class _PageCommentairesState extends State<PageCommentaires> {
+class _PageDetailPostState extends State<PageDetailPost> {
   final _commentaireController = TextEditingController();
 
   @override
@@ -47,7 +49,7 @@ class _PageCommentairesState extends State<PageCommentaires> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Commentaires')),
+      appBar: AppBar(title: const Text(Jargon.commentaires)),
       body: ListView(
         padding: const EdgeInsets.only(top: 8, bottom: 16),
         children: <Widget>[
@@ -61,13 +63,14 @@ class _PageCommentairesState extends State<PageCommentaires> {
                 firestoreService: widget.firestoreService,
                 storageService: widget.storageService,
                 afficherBoutonCommentaire: false,
+                imageGrandeParDefaut: true,
               );
             },
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
             child: Text(
-              'Commentaires',
+              Jargon.commentaires,
               style: Theme.of(
                 context,
               ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
@@ -91,14 +94,14 @@ class _PageCommentairesState extends State<PageCommentaires> {
                   minLines: 1,
                   maxLines: 3,
                   decoration: const InputDecoration(
-                    hintText: 'Écrire un commentaire',
+                    hintText: "Écrire un p'tit bavardage",
                     border: OutlineInputBorder(),
                   ),
                 ),
               ),
               const SizedBox(width: 8),
               IconButton.filled(
-                tooltip: 'Envoyer',
+                tooltip: Jargon.envoyer,
                 onPressed: _envoyerCommentaire,
                 icon: const Icon(Icons.send),
               ),

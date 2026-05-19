@@ -4,10 +4,10 @@ import '../modeles/membre.dart';
 import '../services_firebase/service_authentification.dart';
 import '../services_firebase/service_firestore.dart';
 import '../services_firebase/service_storage.dart';
-import '../widgets/widget_image_profil.dart';
+import '../widgets/avatar.dart';
 
-class PageModificationProfil extends StatefulWidget {
-  const PageModificationProfil({
+class PageModifierProfil extends StatefulWidget {
+  const PageModifierProfil({
     super.key,
     required this.membre,
     required this.authentificationService,
@@ -21,10 +21,10 @@ class PageModificationProfil extends StatefulWidget {
   final ServiceStorage storageService;
 
   @override
-  State<PageModificationProfil> createState() => _PageModificationProfilState();
+  State<PageModifierProfil> createState() => _PageModifierProfilState();
 }
 
-class _PageModificationProfilState extends State<PageModificationProfil> {
+class _PageModifierProfilState extends State<PageModifierProfil> {
   late final TextEditingController _prenomController;
   late final TextEditingController _nomController;
   late final TextEditingController _professionController;

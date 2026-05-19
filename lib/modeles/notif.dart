@@ -6,6 +6,7 @@
     required this.message,
     required this.type,
     required this.dateCreation,
+    this.postId,
     this.lue = false,
   });
 
@@ -15,6 +16,7 @@
   final String message;
   final String type;
   final DateTime dateCreation;
+  final String? postId;
   final bool lue;
 
   NotificationMembre copyWith({bool? lue}) {
@@ -25,6 +27,7 @@
       message: message,
       type: type,
       dateCreation: dateCreation,
+      postId: postId,
       lue: lue ?? this.lue,
     );
   }
@@ -37,6 +40,7 @@
       'message': message,
       'type': type,
       'dateCreation': dateCreation.toIso8601String(),
+      'postId': postId,
       'lue': lue,
     };
   }
@@ -49,6 +53,7 @@
       message: map['message'] as String? ?? '',
       type: map['type'] as String? ?? 'notification',
       dateCreation: _dateDepuisMap(map['dateCreation']),
+      postId: map['postId'] as String?,
       lue: map['lue'] as bool? ?? false,
     );
   }

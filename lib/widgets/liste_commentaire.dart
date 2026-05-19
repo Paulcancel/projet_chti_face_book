@@ -1,12 +1,12 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 
 import '../modeles/commentaire.dart';
-import '../modeles/date_heure.dart';
+import '../modeles/donnees.dart';
 import '../modeles/membre.dart';
 import '../services_firebase/service_firestore.dart';
 import '../services_firebase/service_storage.dart';
-import 'empty_body.dart';
-import 'widget_image_profil.dart';
+import 'widget_vide.dart';
+import 'avatar.dart';
 
 class WidgetListeCommentaire extends StatelessWidget {
   const WidgetListeCommentaire({
@@ -31,7 +31,7 @@ class WidgetListeCommentaire extends StatelessWidget {
             height: 220,
             child: EmptyBody(
               icon: Icons.mode_comment_outlined,
-              message: 'Aucun commentaire pour le moment.',
+              message: Jargon.aucunCommentaire,
             ),
           );
         }
@@ -77,7 +77,7 @@ class _CommentaireItem extends StatelessWidget {
                     serviceStorage: storageService,
                     rayon: 22,
                   ),
-          title: Text(auteur?.nomComplet ?? 'Membre inconnu'),
+          title: Text(auteur?.nomComplet ?? Jargon.membreInconnu),
           subtitle: Text(commentaire.contenu),
           trailing: Text(
             DateHeure.relative(commentaire.dateCreation),

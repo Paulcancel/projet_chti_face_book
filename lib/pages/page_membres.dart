@@ -1,15 +1,17 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
+
+import '../modeles/donnees.dart';
 
 import '../modeles/membre.dart';
 import '../services_firebase/service_authentification.dart';
 import '../services_firebase/service_firestore.dart';
 import '../services_firebase/service_storage.dart';
-import '../widgets/empty_body.dart';
-import '../widgets/widget_image_profil.dart';
+import '../widgets/widget_vide.dart';
+import '../widgets/avatar.dart';
 import 'page_profil.dart';
 
-class PageListeMembres extends StatelessWidget {
-  const PageListeMembres({
+class PageMembres extends StatelessWidget {
+  const PageMembres({
     super.key,
     required this.membreConnecte,
     required this.authentificationService,
@@ -31,7 +33,7 @@ class PageListeMembres extends StatelessWidget {
         if (membres.isEmpty) {
           return const EmptyBody(
             icon: Icons.groups_outlined,
-            message: 'Aucun membre inscrit.',
+            message: Jargon.aucunMembre,
           );
         }
 

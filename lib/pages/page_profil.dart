@@ -1,15 +1,17 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
+
+import '../modeles/donnees.dart';
 
 import '../modeles/membre.dart';
 import '../modeles/post.dart';
 import '../services_firebase/service_authentification.dart';
 import '../services_firebase/service_firestore.dart';
 import '../services_firebase/service_storage.dart';
-import '../widgets/empty_body.dart';
-import '../widgets/widget_image_profil.dart';
+import '../widgets/widget_vide.dart';
+import '../widgets/avatar.dart';
 import '../widgets/widget_post.dart';
-import 'page_commentaires.dart';
-import 'page_modification_profil.dart';
+import 'page_detail_post.dart';
+import 'page_modifier_profil.dart';
 
 class PageProfil extends StatelessWidget {
   const PageProfil({
@@ -55,7 +57,10 @@ class PageProfil extends StatelessWidget {
       return contenu;
     }
 
-    return Scaffold(appBar: AppBar(title: const Text('Profil')), body: contenu);
+    return Scaffold(
+      appBar: AppBar(title: const Text(Jargon.profil)),
+      body: contenu,
+    );
   }
 }
 
@@ -134,7 +139,7 @@ class _ContenuProfil extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 18, 16, 6),
           child: Text(
-            _estMonProfil ? 'Mes posts' : 'Posts',
+            _estMonProfil ? "Mes racontaches" : "Racontaches",
             style: theme.textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.w700,
             ),
@@ -149,7 +154,7 @@ class _ContenuProfil extends StatelessWidget {
                 height: 220,
                 child: EmptyBody(
                   icon: Icons.article_outlined,
-                  message: 'Aucune publication.',
+                  message: Jargon.aucunPost,
                 ),
               );
             }
@@ -175,7 +180,7 @@ class _ContenuProfil extends StatelessWidget {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder:
-            (_) => PageModificationProfil(
+            (_) => PageModifierProfil(
               membre: membre,
               authentificationService: authentificationService,
               firestoreService: firestoreService,
@@ -189,7 +194,7 @@ class _ContenuProfil extends StatelessWidget {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder:
-            (_) => PageCommentaires(
+            (_) => PageDetailPost(
               post: post,
               membreConnecte: membreConnecte,
               firestoreService: firestoreService,

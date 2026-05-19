@@ -1,12 +1,13 @@
 ﻿import 'package:flutter/material.dart';
 
-import '../modeles/date_heure.dart';
-import '../modeles/notification_membre.dart';
+import '../modeles/donnees.dart';
+import '../modeles/notif.dart';
 
 class WidgetNotif extends StatelessWidget {
-  const WidgetNotif({super.key, required this.notification});
+  const WidgetNotif({super.key, required this.notification, this.onTap});
 
   final NotificationMembre notification;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -19,6 +20,7 @@ class WidgetNotif extends StatelessWidget {
     };
 
     return ListTile(
+      onTap: onTap,
       leading: CircleAvatar(
         backgroundColor:
             notification.lue
@@ -39,6 +41,7 @@ class WidgetNotif extends StatelessWidget {
         ),
       ),
       subtitle: Text(DateHeure.relative(notification.dateCreation)),
+      trailing: onTap == null ? null : const Icon(Icons.chevron_right),
     );
   }
 }
